@@ -16,7 +16,7 @@ RUN tar xzf /opt/install/deb64.tar.gz -C /opt/install \
 COPY httpd.conf /usr/local/apache2/conf/httpd.conf
 
 #copy in container default.vrd - config connection to 1c
-COPY default.vrd /usr/local/apache2/htdocs/unft/default.vrd
+COPY default.vrd /usr/local/apache2/htdocs/base_name/default.vrd
 
 #set file permissions
-RUN chown daemon:daemon /usr/local/apache2/htdocs/unft/default.vrd
+RUN chown daemon:daemon /usr/local/apache2/htdocs/base_name/default.vrd
