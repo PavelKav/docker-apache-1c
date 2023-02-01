@@ -8,7 +8,7 @@ Docker работает и на Linux, и на macOS и на Windows. Скоре
 
 Подробные инструкции по установке Docker: https://docs.docker.com/install/
 
-На сервер будем ставить Docker CE (Community Edition), в частности для Ubuntu инструкция здесь: https://docs.docker.com/install/linux/docker-ce/ubuntu/
+На сервер будем ставить Docker CE (Community Edition), в частности для Debian инструкция здесь: https://docs.docker.com/install/linux/docker-ce/debian/
 
 При установке на Linux не забудем про этот важный шаг, который описан на отдельной странице в документации: https://docs.docker.com/install/linux/linux-postinstall/
 
@@ -20,28 +20,26 @@ Docker работает и на Linux, и на macOS и на Windows. Скоре
 Шаг 3 - подготовка default.vrd.
 Создадим файл с настройками подключения к 1С: default.vrd
 
-Я привожу пример минимального vrd файла в котором по умолчанию опубликованы все веб-сервисы, все http сервисы и стандартный REST интерфейс (OData).
-
-<?xml version="1.0" encoding="UTF-8"?>
-<point xmlns="http://v8.1c.ru/8.2/virtual-resource-system"
-		xmlns:xs="http://www.w3.org/2001/XMLSchema"
-		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		base="/unft"
-		ib="Srvr=appbshp0;Ref=unft"
-	<ws publishExtensionsByDefault="true" />
-	<standardOData enable="false"
-	                reuseSession="autouse"
-	                sessionMaxAge="20"
-	                poolSize="10"
-	                poolTimeout="5"/>
-	<analytics enable="true"/>
-</point>
-XML
-Обратите внимание на строку подключения, замените имя сервера 1С (appbshp0) и имя информационной базы (unft) на свои.
+Обратите внимание на строку подключения, замените имя сервера 1С (server_name) и имя информационной базы (base_name) на свои.
 
 Если вы ранее уже публиковали свою базу на веб-сервере (не важно на каком: IIS или Apache, Windows или Linux, с помощью конфигуратор или с помощью webinst), у вас точно должен быть .vrd файл, поищите в публичных директориях веб-сервера и используйте его.
 
 Шаг 4 - подготовка httpd.conf.
 
-Самое интересное в конце файла.  В строчке LoadModule прописать путь к файлу wsap24.so(измениться платформа 1с)
+Самое интересное в конце файла.  В строчке LoadModule прописать путь к файлу wsap24.so(изменится платформа 1с)
 В 1с Publication поменять путь к базе 1с.
+
+Шаг 5 - подготовка Dockerfile.
+Создадим файл с именем Dockerfile (без расширения)
+Тут ничего менять не надо, единственное можете указать свои директории для сохранения и распаковки дистрибутива 1с.
+
+Шаг 6 подготовка docker-compose.yml
+Удобнее всего запускать контейнер на сервере с помощью утилиты docker-compose. Но для начала протестируем этот docker-compose опять же на локальной машине.
+
+Устанавливаем docker-compose: https://docs.docker.com/compose/install/
+
+Всё в той же директории проекта (где у нас уже есть Dockerfile, httpd.conf, и др.) создаём файл docker-compose.yml.
+Тут так же меняем имя сервера и его IP. Так же меняем порт на любой Ports: 8041(порт на локальной машине):80(порт контейнера), чтобы два апача не стучались в один порт.
+И запускаем контейнер с помощью команды:
+
+docker compose up -d --build
